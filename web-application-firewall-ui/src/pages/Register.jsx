@@ -5,6 +5,8 @@ import axios from "axios";
 import { useToast } from "../context/ToastContext";
 import extractErrorMessage from "../utils/extractHandler";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URI;
+
 const Register = () => {
   const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -16,6 +18,7 @@ const Register = () => {
     const formData = new FormData(event.target);
     const adminName = formData.get("adminName");
     const companyName = formData.get("companyName");
+    const domain = formData.get("domain");
     const email = formData.get("email");
     const password = formData.get("password");
     const registerData = {
@@ -23,11 +26,12 @@ const Register = () => {
       companyName,
       email,
       password,
+      domain,
     };
 
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/api/v1/users/register",
+        `${BACKEND_URL}/waf/api/v1/user/register`,
         registerData,
         {
           headers: {
@@ -85,13 +89,26 @@ const Register = () => {
           </div>
           <div className="mt-6">
             <div className="mb-2 block">
-              <Label htmlFor="name" value="Company name" />
+              <Label htmlFor="company" value="Company name" />
             </div>
             <TextInput
               id="company"
               name="companyName"
               type="text"
               placeholder="@company name"
+              required
+              shadow
+            />
+          </div>
+          <div className="mt-6">
+            <div className="mb-2 block">
+              <Label htmlFor="domain" value="Domain name" />
+            </div>
+            <TextInput
+              id="domain"
+              name="domain"
+              type="text"
+              placeholder="eg. https://www.google.com"
               required
               shadow
             />

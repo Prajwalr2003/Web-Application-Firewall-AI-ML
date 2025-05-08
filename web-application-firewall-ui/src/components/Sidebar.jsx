@@ -36,13 +36,6 @@ const Sidebar = () => {
       </div>
       <div
         className="flex justify-start gap-2 items-center hover:bg-slate-700 p-2 cursor-pointer mt-3"
-        onClick={() => handleNavigation("/filter-logs")}
-      >
-        <BsFillFilterCircleFill size={30} />
-        Filter Logs
-      </div>
-      <div
-        className="flex justify-start gap-2 items-center hover:bg-slate-700 p-2 cursor-pointer mt-3"
         onClick={() => handleNavigation("/ip-management")}
       >
         <FaFire size={30} />

@@ -45,7 +45,7 @@ const Profile = () => {
         formData.append("profileImage", imageFile);
 
         const res = await axios.post(
-          `${BACKEND_URL}/api/v1/user/upload`,
+          `${BACKEND_URL}/waf/api/v1/user/upload`,
           formData
         );
         imageUrl = res.data.imageUrl;
@@ -59,7 +59,7 @@ const Profile = () => {
       };
 
       const profileResponse = await axios.put(
-        `${BACKEND_URL}/api/v1/user/update`,
+        `${BACKEND_URL}/waf/api/v1/user/update`,
         profileData
       );
       console.log(profileResponse);
@@ -113,6 +113,18 @@ const Profile = () => {
               placeholder=""
               type="text"
               value={user?.companyName.toUpperCase() || ""}
+              readOnly
+              required
+              shadow
+            />
+          </div>
+          <div className="p-5 border mt-8 rounded-xl shadow ">
+            <p className="text-xl font-bold mb-4">Domain</p>
+            <TextInput
+              id="companyName"
+              placeholder=""
+              type="text"
+              value={user?.domain || ""}
               readOnly
               required
               shadow

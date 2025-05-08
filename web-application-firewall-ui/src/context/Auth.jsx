@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
     const storedRefreshToken = localStorage.getItem("refreshToken");
     if (storedToken && storedRefreshToken) {
       try {
-        const res = await axios.get(`${BACKEND_URL}/api/v1/user/verify`, {
+        const res = await axios.get(`${BACKEND_URL}/waf/api/v1/user/verify`, {
           headers: { Authorization: `Bearer ${storedToken}` },
         });
         if (res.status == 200) {
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
         } else {
           try {
             const refreshRes = await axios.post(
-              `${BACKEND_URL}/api/v1/user/refresh`,
+              `${BACKEND_URL}/waf/api/v1/user/refresh`,
               { refreshToken: storedRefreshToken }
             );
             if (refreshRes.status == 200) {
@@ -80,12 +80,12 @@ export const AuthProvider = ({ children }) => {
   const loginUser = async (loginData) => {
     try {
       const res = await axios.post(
-        `${BACKEND_URL}/api/v1/user/login`,
+        `${BACKEND_URL}/waf/api/v1/user/login`,
         loginData,
         {
           withCredentials: true,
           headers: {
-            "Content-Type" : "application/json",
+            "Content-Type": "application/json",
           },
         }
       );

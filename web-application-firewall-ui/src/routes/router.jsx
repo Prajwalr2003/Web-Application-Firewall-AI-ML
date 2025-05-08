@@ -3,7 +3,6 @@ import App from "../App";
 import Dashboard from "../pages/Dashboard";
 import ActiveThreat from "../pages/ActiveThreat";
 import TrafficLogs from "../pages/TrafficLogs";
-import FilterLogs from "../pages/FilterLogs";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Profile from "../pages/Profile";
@@ -24,10 +23,6 @@ const router = createBrowserRouter([
       {
         path: "/traffic-logs",
         element: <TrafficLogs />,
-      },
-      {
-        path: "/filter-logs",
-        element: <FilterLogs />,
       },
       {
         path: "/ip-management",

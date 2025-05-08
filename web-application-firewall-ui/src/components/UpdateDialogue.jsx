@@ -1,16 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { TextInput, Textarea, Select, Button, Spinner } from "flowbite-react";
 import { motion } from "framer-motion";
 import { HiPlus, HiX } from "react-icons/hi";
 import axios from "axios";
 import { useToast } from "../context/ToastContext";
-import { useAuth } from "../context/Auth";
-
-import Loader from "./Loader.component";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URI;
 
-const AddIPDialogue = ({ open, setOpen, fetchIPList, loading, setLoading }) => {
+const UpdateDialogue = ({
+  action,
+  setAction,
+  data,
+  fetchIPList,
+  loading,
+  setLoading,
+}) => {
   const dialogVariants = {
     hidden: { opacity: 0, scale: 0.5 },
     visible: {
@@ -21,34 +25,33 @@ const AddIPDialogue = ({ open, setOpen, fetchIPList, loading, setLoading }) => {
     exit: { opacity: 0, scale: 0.5, transition: { duration: 0.2 } },
   };
 
-  let ipType = useRef();
-  let name = useRef();
-  let description = useRef();
-  let address = useRef();
-  let status = useRef();
+  let [_id, setId] = useState(data._id);
+  let [ipType, setIPType] = useState(data.ipType);
+  let [name, setName] = useState(data.name);
+  let [description, setDescription] = useState(data.description);
+  let [address, setAddress] = useState(data.address);
+  let [status, setStatus] = useState(data.status ? "blocked" : "allowed");
+
+  const handleAction = () => {
+    setAction(!action);
+  };
 
   const { showToast } = useToast();
 
-  const { user } = useAuth();
-
-  const handleDialogue = () => {
-    setOpen(!open);
-  };
-
-  const addIP = async () => {
+  const updateIP = async () => {
     try {
       setLoading(true);
       let IPData = {
-        ipType: ipType.current?.value,
-        name: name.current?.value,
-        description: description.current?.value,
-        address: address.current?.value,
-        status: status.current?.value,
-        userId: user._id,
+        _id,
+        ipType,
+        name,
+        description,
+        address,
+        status,
       };
       console.log(IPData);
       const res = await axios.post(
-        `${BACKEND_URL}/waf/api/v1/ip/add-ip`,
+        `${BACKEND_URL}/waf/api/v1/ip/update-ip`,
         IPData,
         {
           withCredentials: true,
@@ -58,16 +61,16 @@ const AddIPDialogue = ({ open, setOpen, fetchIPList, loading, setLoading }) => {
         }
       );
       console.log(res);
-      setOpen(false);
+      setAction(false);
       setLoading(false);
       fetchIPList();
-      showToast("IP Added Successfully", "success");
+      showToast("IP Updated Successfully", "success");
     } catch (error) {
-      console.log(error, "IP creation failed");
+      console.log(error, "IP update failed");
       setLoading(false);
       if (error.response && error.response.status === 400) {
         if (error.response.data && error.response.data.message) {
-          showToast(error.response.data.message, "error");
+          toast.error(error.response.data.message);
         } else {
           showToast("IP address already exists.", "error");
         }
@@ -88,7 +91,7 @@ const AddIPDialogue = ({ open, setOpen, fetchIPList, loading, setLoading }) => {
       >
         {/* Close Button */}
         <button
-          onClick={handleDialogue}
+          onClick={handleAction}
           className="absolute top-2 right-2 text-gray-400 hover:text-white"
         >
           <HiX size={20} />
@@ -96,7 +99,7 @@ const AddIPDialogue = ({ open, setOpen, fetchIPList, loading, setLoading }) => {
 
         <div className="space-y-6 p-6 bg-gray-900 rounded-lg border border-gray-700 shadow-2xl">
           <h2 className="text-xl font-semibold text-gray-100">
-            Add IP Address
+            Update IP Address
           </h2>
           <p className="text-gray-400 text-sm">
             Enter the details for the new IP address.
@@ -110,7 +113,11 @@ const AddIPDialogue = ({ open, setOpen, fetchIPList, loading, setLoading }) => {
               >
                 Type
               </label>
-              <Select id="type" ref={ipType}>
+              <Select
+                id="type"
+                value={ipType}
+                onChange={(e) => setIPType(e.target.value)}
+              >
                 <option value="host">Host</option>
                 <option value="network">Network</option>
                 <option value="range">Range</option>
@@ -126,7 +133,8 @@ const AddIPDialogue = ({ open, setOpen, fetchIPList, loading, setLoading }) => {
               </label>
               <TextInput
                 id="address"
-                ref={address}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 placeholder="e.g., 192.168.1.10 or 192.168.1.0/24 or 10.0.0.1-10.0.0.50"
                 className="bg-gray-800 border-gray-700 text-gray-200 placeholder:text-gray-400 text-sm"
               />
@@ -141,7 +149,8 @@ const AddIPDialogue = ({ open, setOpen, fetchIPList, loading, setLoading }) => {
               </label>
               <TextInput
                 id="name"
-                ref={name}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., Server A"
                 className="bg-gray-800 border-gray-700 text-gray-200 placeholder:text-gray-400 text-sm"
               />
@@ -156,7 +165,8 @@ const AddIPDialogue = ({ open, setOpen, fetchIPList, loading, setLoading }) => {
               </label>
               <Textarea
                 id="description"
-                ref={description}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 placeholder="e.g., Web Server"
                 className="bg-gray-800 border-gray-700 text-gray-200 placeholder:text-gray-400 min-h-[80px] text-sm"
               />
@@ -168,7 +178,11 @@ const AddIPDialogue = ({ open, setOpen, fetchIPList, loading, setLoading }) => {
               >
                 Status
               </label>
-              <Select id="status" ref={status}>
+              <Select
+                id="status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
                 <option value="allowed">Allowed</option>
                 <option value="blocked">Blocked</option>
               </Select>
@@ -177,12 +191,12 @@ const AddIPDialogue = ({ open, setOpen, fetchIPList, loading, setLoading }) => {
 
           {/* Action Buttons */}
           <div className="flex justify-end space-x-3 pt-4">
-            <Button color="gray" onClick={handleDialogue}>
+            <Button color="gray" onClick={handleAction}>
               Cancel
             </Button>
             {!loading ? (
-              <Button color="blue" icon={HiPlus} onClick={addIP}>
-                Add
+              <Button color="blue" icon={HiPlus} onClick={updateIP}>
+                Update
               </Button>
             ) : (
               <Button type="submit" color="dark">
@@ -196,4 +210,4 @@ const AddIPDialogue = ({ open, setOpen, fetchIPList, loading, setLoading }) => {
   );
 };
 
-export default AddIPDialogue;
+export default UpdateDialogue;

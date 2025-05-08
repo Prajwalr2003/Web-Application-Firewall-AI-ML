@@ -27,11 +27,10 @@ const userSchema = new Schema(
     gender: {
       type: String, 
       lowercase: true,
-      enum: ["male", "female", "others"]
+      enum: ["male", "female", "other"]
     },
     phone: {
       type: String,
-      unique: true,
       trim: true,
       match: [
         /^\d{10}$/,
@@ -57,7 +56,14 @@ const userSchema = new Schema(
         'Please enter a valid email address'
       ],
       index: true
-    }
+    },
+    domain: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true
+    },
   },
   {
     timestamps: true

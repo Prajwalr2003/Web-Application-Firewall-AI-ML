@@ -8,17 +8,18 @@ const { decode } = require("jsonwebtoken");
 const registerUser = asyncHandler ( async (req, res) => {
   // get user details from frontend
   const {adminName, companyName, email, password} = req.body;
+  const domain = req.body.domain.trim();
   // validation - not empty
-  if ([adminName, companyName, email, password].some((field)=>field?.trim()==="")) {
+  if ([adminName, companyName, email, password, domain].some((field)=>field?.trim()==="")) {
     throw new ApiError(400, "All fields are required");
   }
   // check if user already exists: username, email
   const existedUser = await User.findOne({
-    $or: [{email}]
+    $or: [{email}, {domain}]
   });
 
   if(existedUser){
-    throw new ApiError(409, "User with email or username or phone already exists");
+    throw new ApiError(409, "User with email or domain already exists");
   }
   // check for images - unique
   // const userImageLocalPath = req.files?.userImae[0]?.path;
@@ -34,7 +35,8 @@ const registerUser = asyncHandler ( async (req, res) => {
     adminName: adminName.toLowerCase(),
     companyName: companyName.toLowerCase(),
     email: email,
-    password: password
+    password: password,
+    domain: domain.toLowerCase()
     // userImage : userImage.url || ""
   })
 
